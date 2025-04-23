@@ -7,11 +7,14 @@ def calcola_indirizzi():
     try:
         # Recupera i valori dai campi
         addressSegments = []
+        firstSegment = None
         for i in range(4):
             val = int(ip_entries[i].get())
             if val < 0 or val > 255:
                 raise ValueError(f"L'ottetto {i + 1} deve essere compreso tra 0 e 255")
             addressSegments.append(val)
+            if i == 0:
+                firstSegment = val
 
         sm = int(subnet_entry.get())
         if sm < 0 or sm > 32:
@@ -88,6 +91,17 @@ def calcola_indirizzi():
         broadcast_var.set(broadcast)
         next_network_var.set(nextNetId)
 
+        if firstSegment > 0 and firstSegment < 128:
+            class_network_var.set("Class A")
+        elif firstSegment >= 128 and firstSegment < 192:
+            class_network_var.set("Class B")
+        elif firstSegment >= 192 and firstSegment < 224:
+            class_network_var.set("Class C")
+        elif firstSegment >= 224 and firstSegment < 240:
+            class_network_var.set("Class D")
+        elif firstSegment >= 240:
+            class_network_var.set("Class E")
+
     except ValueError as e:
         messagebox.showerror("Errore", str(e))
     except Exception as e:
@@ -144,6 +158,7 @@ first_host_var = tk.StringVar()
 last_host_var = tk.StringVar()
 broadcast_var = tk.StringVar()
 next_network_var = tk.StringVar()
+class_network_var = tk.StringVar()
 
 # Etichette per i risultati
 ttk.Label(results_frame, text="Network ID:").grid(row=0, column=0, sticky=tk.W, pady=2)
@@ -151,6 +166,7 @@ ttk.Label(results_frame, text="Primo Host:").grid(row=1, column=0, sticky=tk.W, 
 ttk.Label(results_frame, text="Ultimo Host:").grid(row=2, column=0, sticky=tk.W, pady=2)
 ttk.Label(results_frame, text="Broadcast:").grid(row=3, column=0, sticky=tk.W, pady=2)
 ttk.Label(results_frame, text="Next Subnet ID:").grid(row=4, column=0, sticky=tk.W, pady=2)  # Modificato qui
+ttk.Label(results_frame, text="Class Network:").grid(row=5, column=0, sticky=tk.W, pady=2)
 
 # Campi per i risultati
 ttk.Label(results_frame, textvariable=network_id_var).grid(row=0, column=1, sticky=tk.W, pady=2)
@@ -158,6 +174,7 @@ ttk.Label(results_frame, textvariable=first_host_var).grid(row=1, column=1, stic
 ttk.Label(results_frame, textvariable=last_host_var).grid(row=2, column=1, sticky=tk.W, pady=2)
 ttk.Label(results_frame, textvariable=broadcast_var).grid(row=3, column=1, sticky=tk.W, pady=2)
 ttk.Label(results_frame, textvariable=next_network_var).grid(row=4, column=1, sticky=tk.W, pady=2)
+ttk.Label(results_frame, textvariable=class_network_var).grid(row=5, column=1, sticky=tk.W, pady=2)
 
 # Configura il grid layout
 results_frame.columnconfigure(1, weight=1)
